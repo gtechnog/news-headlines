@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.gtechnog.sample.news.R;
-import com.gtechnog.sample.news.utils.InjectorUtils;
+import com.gtechnog.sample.news.dagger.DaggerInjector;
+import com.gtechnog.sample.news.dagger.Injector;
+import com.gtechnog.sample.news.dagger.ViewModelFactoryModule;
 import com.gtechnog.sample.news.viewmodels.SharedNewsViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,9 +21,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sharedViewModel = ViewModelProviders.of(this, InjectorUtils.getSharedNewsViewModelFactory(getApplication()))
+        Injector injector = DaggerInjector.builder()
+                .viewModelFactoryModule(new ViewModelFactoryModule(this.getApplication()))
+                .build();
+
+        sharedViewModel = ViewModelProviders.of(this, injector.getSharedNewsViewModelFactory())
                 .get(SharedNewsViewModel.class);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.root_container, NewsListFragment.newInstance(), FRAGMENT_TAG_NEWS_LIST).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.root_container, NewsListFragment.newInstance(), FRAGMENT_TAG_NEWS_LIST)
+                .commit();
     }
 }

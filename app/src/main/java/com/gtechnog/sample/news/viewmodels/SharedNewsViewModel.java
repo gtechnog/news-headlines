@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 
 public class SharedNewsViewModel extends AndroidViewModel {
 
-    public SharedNewsViewModel(@NonNull Application application) {
+    SharedNewsViewModel(@NonNull Application application) {
         super(application);
     }
 }

@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.gtechnog.sample.network.model.NewsEntity;
 
+import javax.inject.Inject;
+
 public class NewsDetailViewModelFactory extends ViewModelProvider.AndroidViewModelFactory {
 
     private Application application;
@@ -16,9 +18,11 @@ public class NewsDetailViewModelFactory extends ViewModelProvider.AndroidViewMod
     /**
      * Creates a {@code AndroidViewModelFactory}
      *
-     * @param application an application to pass in {@link AndroidViewModel}
+     * @param application an application to pass in {@link androidx.lifecycle.AndroidViewModel}
      * @param newsEntity
      */
+
+    @Inject
     public NewsDetailViewModelFactory(@NonNull Application application, NewsEntity newsEntity) {
         super(application);
         this.application = application;

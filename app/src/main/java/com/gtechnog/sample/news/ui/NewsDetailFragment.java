@@ -2,6 +2,7 @@ package com.gtechnog.sample.news.ui;
 
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -18,7 +20,9 @@ import com.google.gson.reflect.TypeToken;
 import com.gtechnog.sample.network.model.NewsEntity;
 import com.gtechnog.sample.news.Constants;
 import com.gtechnog.sample.news.R;
-import com.gtechnog.sample.news.utils.InjectorUtils;
+import com.gtechnog.sample.news.dagger.DaggerInjector;
+import com.gtechnog.sample.news.dagger.Injector;
+import com.gtechnog.sample.news.dagger.ViewModelFactoryModule;
 import com.gtechnog.sample.news.viewmodels.NewsDetailViewModel;
 
 import java.lang.reflect.Type;
@@ -26,7 +30,9 @@ import java.lang.reflect.Type;
 public class NewsDetailFragment extends Fragment {
 
     private NewsDetailViewModel mViewModel;
-    private TextView textView;
+    private TextView titleTextView;
+    private TextView summaryTextView;
+    private Button fullLinkButton;
 
     static NewsDetailFragment newInstance(String newsEntity) {
         Bundle bundle = new Bundle();
@@ -40,8 +46,22 @@ public class NewsDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.news_detail_fragment, container, false);
-        textView = view.findViewById(R.id.title);
+        titleTextView = view.findViewById(R.id.title);
+        summaryTextView = view.findViewById(R.id.summary_content);
+        fullLinkButton = view.findViewById(R.id.full_story_link);
+
+        fullLinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openLinkInBrowser();
+            }
+        });
         return view;
+    }
+
+    private void openLinkInBrowser() {
+        Intent intent = new Intent();
+
     }
 
     @Override
@@ -53,14 +73,18 @@ public class NewsDetailFragment extends Fragment {
         Type type = new TypeToken<NewsEntity>(){}.getType();
         NewsEntity newsEntity = (new Gson()).fromJson(newsEntityString, type);
 
-        mViewModel = ViewModelProviders.of(this, InjectorUtils
-                .getNewsDetailViewModelFactory(getActivity().getApplication(), newsEntity))
+        Injector injector = DaggerInjector.builder()
+                .viewModelFactoryModule(new ViewModelFactoryModule(getActivity().getApplication(), newsEntity))
+                .build();
+        mViewModel = ViewModelProviders.of(this, injector
+                .getNewsDetailViewModelFactory())
                 .get(NewsDetailViewModel.class);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        textView.setText(mViewModel.getTitle());
+        titleTextView.setText(mViewModel.getTitle());
+        summaryTextView.setText(mViewModel.getSummary());
     }
 }

@@ -20,7 +20,9 @@ import com.google.gson.Gson;
 import com.gtechnog.sample.network.model.NewsEntity;
 import com.gtechnog.sample.news.Constants;
 import com.gtechnog.sample.news.R;
-import com.gtechnog.sample.news.utils.InjectorUtils;
+import com.gtechnog.sample.news.dagger.DaggerInjector;
+import com.gtechnog.sample.news.dagger.Injector;
+import com.gtechnog.sample.news.dagger.ViewModelFactoryModule;
 import com.gtechnog.sample.news.viewmodels.NewsListViewModel;
 
 import java.util.List;
@@ -54,8 +56,12 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, InjectorUtils.getNewsListViewModelFactory(getActivity()
-                .getApplication(), InjectorUtils.getHeadlinesRepository()))
+
+        Injector injector = DaggerInjector.builder()
+                .viewModelFactoryModule(new ViewModelFactoryModule(getActivity().getApplication()))
+                .build();
+
+        mViewModel = ViewModelProviders.of(this, injector.getNewsListViewModelFactory())
                 .get(NewsListViewModel.class);
         mViewModel.getNewsList().observe(this, new Observer<List<NewsEntity>>() {
 

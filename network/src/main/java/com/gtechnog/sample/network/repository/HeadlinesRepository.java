@@ -15,12 +15,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HeadlinesRepository {
 
-    public static final String TAG = HeadlinesRepository.class.getSimpleName();
+    private static final String TAG = HeadlinesRepository.class.getSimpleName();
     private static HeadlinesRepository sInstance;
     private final Retrofit retrofit;
     private final HeadlinesApi headlinesApi;
 
-    public HeadlinesRepository() {
+    private HeadlinesRepository() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

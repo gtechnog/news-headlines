@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.gtechnog.sample.network.model.NewsEntity;
 
+import javax.inject.Inject;
+
 public class NewsDetailViewModel extends AndroidViewModel {
 
     private NewsEntity newsEntity;
@@ -19,5 +21,9 @@ public class NewsDetailViewModel extends AndroidViewModel {
 
     public String getTitle() {
         return newsEntity.getTitle();
+    }
+
+    public String getSummary() {
+        return newsEntity.getSummary();
     }
 }
