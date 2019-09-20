@@ -6,9 +6,18 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModel;
 
+import com.gtechnog.sample.network.model.NewsEntity;
+
 public class NewsDetailViewModel extends AndroidViewModel {
 
-    public NewsDetailViewModel(@NonNull Application application) {
+    private NewsEntity newsEntity;
+
+    NewsDetailViewModel(@NonNull Application application, NewsEntity newsEntity) {
         super(application);
+        this.newsEntity = newsEntity;
+    }
+
+    public String getTitle() {
+        return newsEntity.getTitle();
     }
 }

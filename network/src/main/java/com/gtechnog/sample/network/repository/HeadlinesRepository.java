@@ -20,7 +20,7 @@ public class HeadlinesRepository {
     private final Retrofit retrofit;
     private final HeadlinesApi headlinesApi;
 
-    private HeadlinesRepository() {
+    public HeadlinesRepository() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
