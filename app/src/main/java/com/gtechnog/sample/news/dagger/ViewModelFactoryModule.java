@@ -2,6 +2,8 @@ package com.gtechnog.sample.news.dagger;
 
 import android.app.Application;
 
+import androidx.annotation.Nullable;
+
 import com.gtechnog.sample.network.model.NewsEntity;
 import com.gtechnog.sample.network.repository.HeadlinesRepository;
 import com.gtechnog.sample.news.viewmodels.SharedNewsViewModelFactory;
@@ -14,6 +16,9 @@ public class ViewModelFactoryModule {
 
     private Application application;
     private NewsEntity newsEntity;
+
+    public ViewModelFactoryModule() {
+    }
 
     public ViewModelFactoryModule(Application application) {
         this.application = application;
@@ -29,6 +34,7 @@ public class ViewModelFactoryModule {
         return application;
     }
 
+    @Nullable
     @Provides
     NewsEntity provideNewsEntity() {
         return newsEntity;

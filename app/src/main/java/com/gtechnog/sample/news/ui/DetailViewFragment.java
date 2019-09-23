@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.gson.Gson;
@@ -23,32 +24,37 @@ import com.gtechnog.sample.news.dagger.DaggerInjector;
 import com.gtechnog.sample.news.dagger.Injector;
 import com.gtechnog.sample.news.dagger.ViewModelFactoryModule;
 import com.gtechnog.sample.news.viewmodels.NewsDetailViewModel;
+import com.gtechnog.sample.news.viewmodels.SharedNewsViewModel;
 
 import java.lang.reflect.Type;
 
-public class NewsDetailFragment extends Fragment {
+public class DetailViewFragment extends Fragment {
 
     private NewsDetailViewModel mViewModel;
+    private SharedNewsViewModel mSharedViewModel;
+
     private TextView titleTextView;
     private TextView summaryTextView;
     private Button fullLinkButton;
+    private ViewGroup detailViewLayout;
 
-    public NewsDetailFragment() {
+    public DetailViewFragment() {
 
     }
 
-    public static NewsDetailFragment newInstance(String newsEntity) {
+    public static DetailViewFragment newInstance(@NonNull String newsEntity) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.BUNDLE_EXTRA_KEYS_NEWS_ENTITY, newsEntity);
-        NewsDetailFragment newsDetailFragment = new NewsDetailFragment();
-        newsDetailFragment.setArguments(bundle);
-        return newsDetailFragment;
+        DetailViewFragment detailViewFragment = new DetailViewFragment();
+        detailViewFragment.setArguments(bundle);
+        return detailViewFragment;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.news_detail_fragment, container, false);
+        detailViewLayout = view.findViewById(R.id.detail_view_layout);
         titleTextView = view.findViewById(R.id.title);
         summaryTextView = view.findViewById(R.id.summary_content);
         fullLinkButton = view.findViewById(R.id.full_story_link);
@@ -76,10 +82,16 @@ public class NewsDetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Bundle bundle = getArguments();
-        String newsEntityString = bundle.getString(Constants.BUNDLE_EXTRA_KEYS_NEWS_ENTITY);
+        String newsEntityString = bundle.getString(Constants.BUNDLE_EXTRA_KEYS_NEWS_ENTITY, "");
 
-        Type type = new TypeToken<NewsEntity>(){}.getType();
-        NewsEntity newsEntity = (new Gson()).fromJson(newsEntityString, type);
+        NewsEntity newsEntity = null;
+        if (!newsEntityString.isEmpty()) {
+            Type type = new TypeToken<NewsEntity>(){}.getType();
+            newsEntity = (new Gson()).fromJson(newsEntityString, type);
+            detailViewLayout.setVisibility(View.VISIBLE);
+        } else {
+            detailViewLayout.setVisibility(View.GONE);
+        }
 
         Injector injector = DaggerInjector.builder()
                 .viewModelFactoryModule(new ViewModelFactoryModule(getActivity().getApplication(), newsEntity))
@@ -87,11 +99,38 @@ public class NewsDetailFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this, injector
                 .getNewsDetailViewModelFactory())
                 .get(NewsDetailViewModel.class);
+
+        if (mViewModel.isDualPaneMode()) {
+            mSharedViewModel = ViewModelProviders.of(getActivity()).get(SharedNewsViewModel.class);
+        }
+
+        registerObservers();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    private void registerObservers() {
+
+        mViewModel.getmNewsEntity().observe(this, new Observer<NewsEntity>() {
+            @Override
+            public void onChanged(NewsEntity newsEntity) {
+                if (newsEntity != null) {
+                    updateUIData();
+                }
+            }
+        });
+
+        if (mViewModel.isDualPaneMode()) {
+            mSharedViewModel.getSelectedNewsItem().observe(this, new Observer<NewsEntity>() {
+
+                @Override
+                public void onChanged(NewsEntity newsEntity) {
+                    mViewModel.setNewsEntity(newsEntity);
+                }
+            });
+        }
+    }
+
+    private void updateUIData() {
+        detailViewLayout.setVisibility(View.VISIBLE);
         titleTextView.setText(mViewModel.getTitle());
         summaryTextView.setText(mViewModel.getSummary());
     }

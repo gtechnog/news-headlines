@@ -1,18 +1,16 @@
 package com.gtechnog.sample.news.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.gtechnog.sample.network.model.NewsEntity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.gtechnog.sample.news.Constants;
 import com.gtechnog.sample.news.R;
-
-import java.lang.reflect.Type;
+import com.gtechnog.sample.news.dagger.DaggerInjector;
+import com.gtechnog.sample.news.dagger.FragmentModule;
+import com.gtechnog.sample.news.dagger.Injector;
 
 public class DetailViewActivity extends AppCompatActivity {
 
@@ -28,8 +26,12 @@ public class DetailViewActivity extends AppCompatActivity {
         String newsEntityString = intent.getStringExtra(Constants.BUNDLE_EXTRA_KEYS_NEWS_ENTITY);
         if (newsEntityString != null && !newsEntityString.isEmpty()) {
 
+            Injector injector = DaggerInjector.builder()
+                    .fragmentModule(new FragmentModule(newsEntityString))
+                    .build();
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.root_container, NewsDetailFragment.newInstance(newsEntityString), FRAGMENT_TAG_NEWS_DETAIL)
+                    .add(R.id.root_container, injector.getNewsDetailFragment(), FRAGMENT_TAG_NEWS_DETAIL)
                     .commit();
 
         } else {

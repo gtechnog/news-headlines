@@ -32,6 +32,10 @@ public class NewsEntity {
         this.multimediaList = multimediaList;
     }
 
+    public String getUrl() {
+        return articleUrl;
+    }
+
     public String getTitle() {
         return title;
     }

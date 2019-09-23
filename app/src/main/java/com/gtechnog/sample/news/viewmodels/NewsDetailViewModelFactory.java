@@ -3,6 +3,7 @@ package com.gtechnog.sample.news.viewmodels;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -23,7 +24,7 @@ public class NewsDetailViewModelFactory extends ViewModelProvider.AndroidViewMod
      */
 
     @Inject
-    public NewsDetailViewModelFactory(@NonNull Application application, NewsEntity newsEntity) {
+    public NewsDetailViewModelFactory(@NonNull Application application, @Nullable NewsEntity newsEntity) {
         super(application);
         this.application = application;
         this.newsEntity = newsEntity;
