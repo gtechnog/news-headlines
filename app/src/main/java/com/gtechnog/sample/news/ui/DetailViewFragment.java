@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,12 +18,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.gtechnog.sample.network.model.MediaEntity;
 import com.gtechnog.sample.network.model.NewsEntity;
 import com.gtechnog.sample.news.Constants;
 import com.gtechnog.sample.news.R;
 import com.gtechnog.sample.news.dagger.DaggerInjector;
+import com.gtechnog.sample.news.dagger.ImageHelperModule;
 import com.gtechnog.sample.news.dagger.Injector;
 import com.gtechnog.sample.news.dagger.ViewModelFactoryModule;
+import com.gtechnog.sample.news.media.ImageHelper;
+import com.gtechnog.sample.news.media.MediaHelper;
+import com.gtechnog.sample.news.media.MediaType;
 import com.gtechnog.sample.news.viewmodels.NewsDetailViewModel;
 import com.gtechnog.sample.news.viewmodels.SharedNewsViewModel;
 
@@ -37,6 +43,9 @@ public class DetailViewFragment extends Fragment {
     private TextView summaryTextView;
     private Button fullLinkButton;
     private ViewGroup detailViewLayout;
+    private ImageView imageView;
+    private Injector injector;
+    private ImageHelper imageHelper;
 
     public DetailViewFragment() {
 
@@ -58,6 +67,7 @@ public class DetailViewFragment extends Fragment {
         titleTextView = view.findViewById(R.id.title);
         summaryTextView = view.findViewById(R.id.summary_content);
         fullLinkButton = view.findViewById(R.id.full_story_link);
+        imageView = view.findViewById(R.id.news_image);
 
         setClickListeners();
         return view;
@@ -93,13 +103,15 @@ public class DetailViewFragment extends Fragment {
             detailViewLayout.setVisibility(View.GONE);
         }
 
-        Injector injector = DaggerInjector.builder()
+        injector = DaggerInjector.builder()
                 .viewModelFactoryModule(new ViewModelFactoryModule(getActivity().getApplication(), newsEntity))
+                .imageHelperModule(new ImageHelperModule())
                 .build();
         mViewModel = ViewModelProviders.of(this, injector
                 .getNewsDetailViewModelFactory())
                 .get(NewsDetailViewModel.class);
 
+        imageHelper = injector.getImageHelper();
         if (mViewModel.isDualPaneMode()) {
             mSharedViewModel = ViewModelProviders.of(getActivity()).get(SharedNewsViewModel.class);
         }
@@ -133,5 +145,11 @@ public class DetailViewFragment extends Fragment {
         detailViewLayout.setVisibility(View.VISIBLE);
         titleTextView.setText(mViewModel.getTitle());
         summaryTextView.setText(mViewModel.getSummary());
+        MediaEntity mediaEntity = mViewModel.getmNewsEntity().getValue().getMediaEntityByType(MediaHelper.getMediaFormatStringByMediaType(MediaType.MEDIUM_IMAGE));
+        if (mediaEntity != null) {
+            imageHelper.loadImageUrl(imageView, mediaEntity.getUrl());
+        } else {
+            imageView.setImageResource(R.drawable.place_holder);
+        }
     }
 }

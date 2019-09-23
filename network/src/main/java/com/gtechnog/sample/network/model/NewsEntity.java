@@ -43,6 +43,19 @@ public class NewsEntity {
     public String getSummary() {
         return summary;
     }
+
+    public MediaEntity getMediaEntityByType(String format) {
+        if (multimediaList != null) {
+            for (MediaEntity entity: multimediaList) {
+                if (entity.getFormat().equalsIgnoreCase(format)) {
+                    return entity;
+                }
+            }
+
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -9,8 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gtechnog.sample.network.model.MediaEntity;
 import com.gtechnog.sample.network.model.NewsEntity;
 import com.gtechnog.sample.news.R;
+import com.gtechnog.sample.news.media.ImageHelper;
+import com.gtechnog.sample.news.media.MediaHelper;
+import com.gtechnog.sample.news.media.MediaType;
 
 import java.util.List;
 
@@ -22,10 +26,12 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Headli
 
     private List<NewsEntity> newsEntityList;
     private static OnItemClickListener onItemClickListener;
+    private ImageHelper imageHelper;
 
-    NewsListAdapter(List<NewsEntity> list, OnItemClickListener listener) {
+    NewsListAdapter(List<NewsEntity> list, OnItemClickListener listener, ImageHelper imageHelper) {
         this.newsEntityList = list;
         onItemClickListener = listener;
+        this.imageHelper = imageHelper;
     }
 
     @NonNull
@@ -39,6 +45,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Headli
     @Override
     public void onBindViewHolder(@NonNull HeadlineViewHolder holder, int position) {
         holder.titleText.setText(newsEntityList.get(position).getTitle());
+        MediaEntity entity = newsEntityList.get(position).getMediaEntityByType(MediaHelper.getMediaFormatStringByMediaType(MediaType.STANDARD_THUMBNAIL));
+
+        if (entity != null) {
+            imageHelper.loadImageUrl(holder.imageView, entity.getUrl());
+        } else {
+            holder.imageView.setImageResource(R.drawable.place_holder);
+        }
     }
 
     @Override

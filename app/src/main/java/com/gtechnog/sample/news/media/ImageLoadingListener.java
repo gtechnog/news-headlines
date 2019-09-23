@@ -1,4 +1,4 @@
-package com.gtechnog.sample.news.helper;
+package com.gtechnog.sample.news.media;
 
 import android.graphics.Bitmap;
 

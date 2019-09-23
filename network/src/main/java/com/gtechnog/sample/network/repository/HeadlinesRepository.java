@@ -3,9 +3,11 @@ package com.gtechnog.sample.network.repository;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.gtechnog.sample.network.api.HeadlinesApi;
 import com.gtechnog.sample.network.constants.Constants;
 import com.gtechnog.sample.network.model.HeadlinesResponse;
+import com.gtechnog.sample.network.model.NewsEntity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,9 +25,8 @@ public class HeadlinesRepository {
     private HeadlinesRepository() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder()
-                        .registerTypeAdapter(HeadlinesResponse.class, new HeadlinesDeserializer())
+                        .registerTypeAdapter(new TypeToken<NewsEntity>(){}.getType(), new NewsEntityDesrializer())
                         .create()))
                 .build();
         headlinesApi = retrofit.create(HeadlinesApi.class);

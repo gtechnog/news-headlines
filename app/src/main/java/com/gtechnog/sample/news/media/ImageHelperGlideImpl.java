@@ -1,6 +1,8 @@
-package com.gtechnog.sample.news.helper;
+package com.gtechnog.sample.news.media;
 
 import android.widget.ImageView;
+
+import androidx.annotation.DrawableRes;
 
 public class ImageHelperGlideImpl implements ImageHelper {
 
@@ -28,7 +30,7 @@ public class ImageHelperGlideImpl implements ImageHelper {
     }
 
     @Override
-    public void loadImageUrl(ImageView imageView, String url, int placeHolderResource, ImageLoadingListener listener) {
+    public void loadImageUrl(ImageView imageView, String url, @DrawableRes int placeHolderResource, ImageLoadingListener listener) {
 
     }
 

@@ -30,6 +30,14 @@ public class MediaEntity {
     @SerializedName("copyright")
     private String copyright;
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

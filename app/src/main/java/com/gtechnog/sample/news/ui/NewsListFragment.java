@@ -21,6 +21,7 @@ import com.gtechnog.sample.network.model.NewsEntity;
 import com.gtechnog.sample.news.Constants;
 import com.gtechnog.sample.news.R;
 import com.gtechnog.sample.news.dagger.DaggerInjector;
+import com.gtechnog.sample.news.dagger.ImageHelperModule;
 import com.gtechnog.sample.news.dagger.Injector;
 import com.gtechnog.sample.news.dagger.ViewModelFactoryModule;
 import com.gtechnog.sample.news.viewmodels.NewsListViewModel;
@@ -34,6 +35,7 @@ public class NewsListFragment extends Fragment {
     private SharedNewsViewModel mSharedViewModel;
 
     private RecyclerView recyclerView;
+    private Injector injector;
 
     public static NewsListFragment newInstance() {
         return new NewsListFragment();
@@ -64,8 +66,9 @@ public class NewsListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Injector injector = DaggerInjector.builder()
+        injector = DaggerInjector.builder()
                 .viewModelFactoryModule(new ViewModelFactoryModule(getActivity().getApplication()))
+                .imageHelperModule(new ImageHelperModule())
                 .build();
 
         mViewModel = ViewModelProviders.of(this, injector.getNewsListViewModelFactory())
@@ -79,7 +82,7 @@ public class NewsListFragment extends Fragment {
 
             @Override
             public void onChanged(List<NewsEntity> list) {
-                recyclerView.setAdapter(new NewsListAdapter(list, onItemClickListener));
+                recyclerView.setAdapter(new NewsListAdapter(list, onItemClickListener, injector.getImageHelper()));
             }
         });
     }
