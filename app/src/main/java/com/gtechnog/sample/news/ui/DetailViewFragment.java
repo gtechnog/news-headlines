@@ -1,19 +1,18 @@
 package com.gtechnog.sample.news.ui;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -34,7 +33,11 @@ public class NewsDetailFragment extends Fragment {
     private TextView summaryTextView;
     private Button fullLinkButton;
 
-    static NewsDetailFragment newInstance(String newsEntity) {
+    public NewsDetailFragment() {
+
+    }
+
+    public static NewsDetailFragment newInstance(String newsEntity) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.BUNDLE_EXTRA_KEYS_NEWS_ENTITY, newsEntity);
         NewsDetailFragment newsDetailFragment = new NewsDetailFragment();
@@ -50,18 +53,22 @@ public class NewsDetailFragment extends Fragment {
         summaryTextView = view.findViewById(R.id.summary_content);
         fullLinkButton = view.findViewById(R.id.full_story_link);
 
-        fullLinkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openLinkInBrowser();
-            }
-        });
+        setClickListeners();
         return view;
     }
 
-    private void openLinkInBrowser() {
-        Intent intent = new Intent();
+    private void setClickListeners() {
+        fullLinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFullLinkDetailInBrowser();
+            }
+        });
+    }
 
+    private void showFullLinkDetailInBrowser() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mViewModel.getUrl()));
+        startActivity(intent);
     }
 
     @Override
@@ -70,6 +77,7 @@ public class NewsDetailFragment extends Fragment {
 
         Bundle bundle = getArguments();
         String newsEntityString = bundle.getString(Constants.BUNDLE_EXTRA_KEYS_NEWS_ENTITY);
+
         Type type = new TypeToken<NewsEntity>(){}.getType();
         NewsEntity newsEntity = (new Gson()).fromJson(newsEntityString, type);
 
